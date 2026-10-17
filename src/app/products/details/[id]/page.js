@@ -9,7 +9,7 @@ async function getProduct(id) {
 export default async function ProductDetailsPage({ params }) {
   const { id } = await params;
   const product = await getProduct(id);
-
+  console.log(product);
   return (
     <section className="page-shell detail-page">
       <Link className="back-link" href="/products">
