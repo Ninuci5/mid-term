@@ -3,25 +3,29 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+const fallbackItems = [
+  {
+    id: 1,
+    title: "Fjallraven Backpack",
+    price: 109.95,
+    image:
+      "https://fakestoreapi.com/img/71-3HjGNDUL._AC_SY879._SX._UX._SY._UY_t.png",
+    quantity: 1,
+  },
+  {
+    id: 2,
+    title: "Mens Casual Premium Slim Fit T-Shirts",
+    price: 22.3,
+    image: "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_t.png",
+    quantity: 1,
+  },
+];
+
 export default function CartPage() {
-  const fallbackItems = [
-    {
-      id: 1,
-      title: "Fjallraven Backpack",
-      price: 109.95,
-      image:
-        "https://fakestoreapi.com/img/71-3HjGNDUL._AC_SY879._SX._UX._SY._UY_t.png",
-      quantity: 1,
-    },
-    {
-      id: 2,
-      title: "Mens Casual Premium Slim Fit T-Shirts",
-      price: 22.3,
-      image: "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_t.png",
-      quantity: 1,
-    },
-  ];
   const [items, setItems] = useState(() => {
+    return fallbackItems;
+    /*
+    მგონი რაღაც პრობლემა აქააა, ვერ ვხვდები რაა
     if (typeof window === "undefined") return fallbackItems;
     const saved = window.localStorage.getItem("shoply-cart");
     if (!saved) return fallbackItems;
@@ -31,6 +35,7 @@ export default function CartPage() {
       console.error("Saved cart data is invalid.", error);
       return fallbackItems;
     }
+    */
   });
   useEffect(() => {
     window.localStorage.setItem("shoply-cart", JSON.stringify(items));
