@@ -36,26 +36,55 @@ export default function ProductsPage() {
       <div className="hero">
         <div>
           <p className="eyebrow">THE EVERYDAY EDIT</p>
-          <h1>Good things,<br /><em>well chosen.</em></h1>
-          <p className="hero-copy">A considered collection of products made to bring a little more joy to your everyday.</p>
-          <a className="button dark-button" href="#collection">Explore collection <span>↓</span></a>
+          <h1>
+            Good things,
+            <br />
+            <em>well chosen.</em>
+          </h1>
+          <p className="hero-copy">
+            A considered collection of products made to bring a little more joy
+            to your everyday.
+          </p>
+          <a className="button dark-button" href="#collection">
+            Explore collection <span>↓</span>
+          </a>
         </div>
         <div className="hero-art" aria-hidden="true">
-          <div className="sun"></div><div className="hero-shape"></div>
-          <div className="hero-label">NEW<br />ARRIVALS</div>
+          <div className="sun"></div>
+          <div className="hero-shape"></div>
+          <div className="hero-label">
+            NEW
+            <br />
+            ARRIVALS
+          </div>
         </div>
       </div>
       <div className="section-heading" id="collection">
-        <div><p className="eyebrow">OUR COLLECTION</p><h2>Shop the edit</h2></div>
+        <div>
+          <p className="eyebrow">OUR COLLECTION</p>
+          <h2>Shop the edit</h2>
+        </div>
         <span className="muted">{products.length || "—"} pieces</span>
       </div>
-      {status === "loading" && <div className="loading">Curating your collection...</div>}
-      {status === "error" && <div className="error-box">We could not load the collection. Please refresh and try again.</div>}
+      {status === "loading" && (
+        <div className="loading">Curating your collection...</div>
+      )}
+      {status === "error" && (
+        <div className="error-box">
+          We could not load the collection. Please refresh and try again.
+        </div>
+      )}
       {status === "ready" && (
         <div className="product-grid">
           {products.map((product) => (
-            <Link className="product-card" href={`/products/details/${product.id}`} key={product.id}>
-              <div className="product-image-wrap"><img src={product.image} alt={product.title} /></div>
+            <Link
+              className="product-card"
+              href={`/products/details/${product.id}`}
+              key={product.id}
+            >
+              <div className="product-image-wrap">
+                <img src={product.image} alt={product.title} />
+              </div>
               <div className="product-info">
                 <span className="category">{product.category}</span>
                 <h3>{product.title}</h3>

@@ -22,7 +22,9 @@ export default function NavBar() {
         <nav aria-label="Main navigation">
           {links.map((link) => (
             <Link
-              className={pathname.startsWith(link.href) ? "nav-link active" : "nav-link"}
+              className={
+                pathname.startsWith(link.href) ? "nav-link active" : "nav-link"
+              }
               href={link.href}
               key={link.href}
             >
