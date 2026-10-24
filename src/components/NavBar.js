@@ -10,6 +10,7 @@ const links = [
   { href: "/profile", label: "Profile" },
   { href: "/cart", label: "Cart" },
   { href: "/login", label: "Login" },
+  { href: "/register", label: "Register" },
 ];
 
 export default function NavBar() {
