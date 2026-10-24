@@ -14,7 +14,6 @@ import { selectTotalQuantity } from "@/store/cartSlice";
 const links = [
   { href: "/products", label: "Products" },
   { href: "/profile", label: "Profile" },
-  { href: "/cart", label: "Cart" },
 ];
 
 const guestLinks = [
