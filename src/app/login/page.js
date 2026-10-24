@@ -1,6 +1,7 @@
 "use client";
 
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,6 +21,7 @@ const loginSchema = yup.object({
 
 export default function LoginPage() {
   const dispatch = useDispatch();
+  const router = useRouter();
   const token = useSelector(selectToken);
   const isAuthReady = useSelector(selectIsAuthReady);
   const [result, setResult] = useState(null);
@@ -59,6 +61,7 @@ export default function LoginPage() {
       }
 
       dispatch(loggedIn(data.token));
+      router.push("/profile");
     } catch (error) {
       setResult({
         type: "error",
