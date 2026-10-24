@@ -1,11 +1,16 @@
 "use client";
 
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
 import * as yup from "yup";
-
-const authTokenKey = "shoply-auth-token";
+import {
+  AUTH_STORAGE_KEY,
+  loggedIn,
+  selectIsAuthReady,
+  selectToken,
+} from "@/store/authSlice";
 
 const loginSchema = yup.object({
   username: yup.string().required("Username is required."),
@@ -14,9 +19,10 @@ const loginSchema = yup.object({
 });
 
 export default function LoginPage() {
+  const dispatch = useDispatch();
+  const token = useSelector(selectToken);
+  const isAuthReady = useSelector(selectIsAuthReady);
   const [result, setResult] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const {
     register,
     handleSubmit,
@@ -25,22 +31,6 @@ export default function LoginPage() {
     resolver: yupResolver(loginSchema),
     defaultValues: { remember: false },
   });
-
-  useEffect(() => {
-    try {
-      setIsAuthenticated(Boolean(window.localStorage.getItem(authTokenKey)));
-    } catch (error) {
-      setResult({
-        type: "error",
-        message:
-          error instanceof Error
-            ? `Unable to restore your login: ${error.message}`
-            : "Unable to restore your login.",
-      });
-    } finally {
-      setIsCheckingAuth(false);
-    }
-  }, []);
 
   const onSubmit = async ({ username, password, remember }) => {
     setResult(null);
@@ -51,24 +41,24 @@ export default function LoginPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
-      const data = await response.json();
+      const body = await response.text();
 
       if (!response.ok) {
-        throw new Error(data.message || "Login failed. Check your credentials.");
+        throw new Error(body || "Login failed. Check your credentials.");
       }
 
+      const data = JSON.parse(body);
       if (typeof data.token !== "string" || !data.token) {
         throw new Error("Login succeeded but the server did not return a token.");
       }
 
       if (remember) {
-        window.localStorage.setItem(authTokenKey, data.token);
+        window.localStorage.setItem(AUTH_STORAGE_KEY, data.token);
       } else {
-        window.localStorage.removeItem(authTokenKey);
+        window.localStorage.removeItem(AUTH_STORAGE_KEY);
       }
 
-      setIsAuthenticated(true);
-      setResult({ type: "success", message: "Login successful." });
+      dispatch(loggedIn(data.token));
     } catch (error) {
       setResult({
         type: "error",
@@ -80,7 +70,7 @@ export default function LoginPage() {
     }
   };
 
-  if (isCheckingAuth) {
+  if (!isAuthReady) {
     return (
       <section className="page-shell login-page">
         <p className="muted" role="status">Checking your login...</p>
@@ -88,15 +78,16 @@ export default function LoginPage() {
     );
   }
 
-  if (isAuthenticated) {
+  if (token) {
     return (
       <section className="page-shell login-page">
         <div className="section-heading">
-            <div>
-              <p className="eyebrow">YOUR ACCOUNT</p>
-              <h1>You&apos;re logged in</h1>
-            </div>
+          <div>
+            <p className="eyebrow">YOUR ACCOUNT</p>
+            <h1>You&apos;re logged in</h1>
+          </div>
         </div>
+        <p className="muted">Use Logout in the navigation to sign out.</p>
       </section>
     );
   }

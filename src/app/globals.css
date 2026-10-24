@@ -19,6 +19,7 @@ button { font: inherit; }
 .brand-mark { align-items: center; background: var(--ink); border-radius: 50%; color: white; display: inline-flex; font-size: 14px; height: 27px; justify-content: center; letter-spacing: 0; width: 27px; }
 nav { display: flex; gap: 34px; margin-left: auto; margin-right: 55px; }
 .nav-link { color: var(--muted); font-size: 13px; padding: 7px 0; }
+.nav-logout { background: none; border: 0; cursor: pointer; font-family: inherit; }
 .nav-link.active, .nav-link:hover { color: var(--ink); }
 .nav-link.active { border-bottom: 1px solid var(--ink); }
 .nav-bag { align-items: center; display: flex; font-size: 13px; gap: 8px; }
