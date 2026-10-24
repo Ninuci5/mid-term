@@ -24,6 +24,8 @@ nav { display: flex; gap: 34px; margin-left: auto; margin-right: 55px; }
 .nav-bag { align-items: center; display: flex; font-size: 13px; gap: 8px; }
 .nav-bag span:first-child { font-size: 22px; line-height: 1; }
 .nav-bag .nav-bag-count { background: var(--ink); border-radius: 999px; color: white; font-size: 11px; min-width: 20px; padding: 2px 6px; text-align: center; }
+.toast { animation: toast-in .2s ease-out; background: var(--ink); bottom: 24px; box-shadow: 0 6px 20px rgba(0, 0, 0, .18); color: white; font-size: 13px; padding: 14px 20px; position: fixed; right: 24px; z-index: 100; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .cart-empty { background: white; padding: 40px 30px; }
 .remove-button { background: none; border: 0; color: var(--muted); cursor: pointer; display: block; font-size: 12px; margin-top: 12px; padding: 0; text-decoration: underline; }
 .remove-button:hover { color: #a14d3d; }
