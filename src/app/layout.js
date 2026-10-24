@@ -2,6 +2,7 @@ import { Geist } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/Footer";
 import NavBar from "@/components/NavBar";
+import StoreProvider from "@/store/StoreProvider";
 
 const geist = Geist({
   variable: "--font-geist",
@@ -17,9 +18,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={geist.variable}>
       <body>
-        <NavBar />
-        <main className="site-main">{children}</main>
-        <Footer />
+        <StoreProvider>
+          <NavBar />
+          <main className="site-main">{children}</main>
+          <Footer />
+        </StoreProvider>
       </body>
     </html>
   );

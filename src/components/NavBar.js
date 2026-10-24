@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSelector } from "react-redux";
+import { selectTotalQuantity } from "@/store/cartSlice";
 
 const links = [
   { href: "/products", label: "Products" },
@@ -12,6 +14,7 @@ const links = [
 
 export default function NavBar() {
   const pathname = usePathname();
+  const totalQuantity = useSelector(selectTotalQuantity);
 
   return (
     <header className="navbar">
@@ -36,6 +39,7 @@ export default function NavBar() {
         <Link className="nav-bag" href="/cart" aria-label="Open cart">
           <span aria-hidden="true">♡</span>
           <span>Cart</span>
+          <span className="nav-bag-count">{totalQuantity}</span>
         </Link>
       </div>
     </header>

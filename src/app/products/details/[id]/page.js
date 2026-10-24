@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AddToCartButton from "@/components/AddToCartButton";
 
 async function getProduct(id) {
   const response = await fetch(`https://fakestoreapi.com/products/${id}`);
@@ -28,9 +29,7 @@ export default async function ProductDetailsPage({ params }) {
           </div>
           <p className="detail-price">${product.price.toFixed(2)}</p>
           <p className="detail-description">{product.description}</p>
-          <button className="button dark-button" type="button">
-            Add to cart <span>+</span>
-          </button>
+          <AddToCartButton product={product} />
           <div className="detail-meta">
             <span>Free delivery</span>
             <span>30-day returns</span>

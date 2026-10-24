@@ -1,63 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-
-const fallbackItems = [
-  {
-    id: 1,
-    title: "Fjallraven Backpack",
-    price: 109.95,
-    image:
-      "https://fakestoreapi.com/img/71-3HjGNDUL._AC_SY879._SX._UX._SY._UY_t.png",
-    quantity: 1,
-  },
-  {
-    id: 2,
-    title: "Mens Casual Premium Slim Fit T-Shirts",
-    price: 22.3,
-    image: "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_t.png",
-    quantity: 1,
-  },
-];
+import { useDispatch, useSelector } from "react-redux";
+import {
+  decreaseQuantity,
+  increaseQuantity,
+  removeFromCart,
+  selectCartItems,
+  selectTotalPrice,
+  selectTotalQuantity,
+} from "@/store/cartSlice";
 
 export default function CartPage() {
-  const [items, setItems] = useState(fallbackItems);
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  // Read localStorage after hydration so server and client markup match.
-  useEffect(() => {
-    const saved = window.localStorage.getItem("shoply-cart");
-    if (saved) {
-      try {
-        setItems(JSON.parse(saved));
-      } catch (error) {
-        console.error("Saved cart data is invalid.", error);
-      }
-    }
-    setIsLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isLoaded) return;
-    window.localStorage.setItem("shoply-cart", JSON.stringify(items));
-  }, [items, isLoaded]);
-
-  const updateQuantity = (id, delta) =>
-    setItems((current) =>
-      current.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              quantity: Math.min(10, Math.max(1, item.quantity + delta)),
-            }
-          : item,
-      ),
-    );
-  const total = items.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0,
-  );
+  const dispatch = useDispatch();
+  const items = useSelector(selectCartItems);
+  const totalQuantity = useSelector(selectTotalQuantity);
+  const total = useSelector(selectTotalPrice);
 
   return (
     <section className="page-shell cart-page">
@@ -66,10 +24,15 @@ export default function CartPage() {
           <p className="eyebrow">YOUR SELECTION</p>
           <h1>Your cart</h1>
         </div>
-        <span className="muted">{items.length} items</span>
+        <span className="muted">
+          {totalQuantity} {totalQuantity === 1 ? "item" : "items"}
+        </span>
       </div>
       <div className="cart-layout">
         <div className="cart-items">
+          {items.length === 0 && (
+            <p className="cart-empty muted">Your cart is empty.</p>
+          )}
           {items.map((item) => (
             <div className="cart-item" key={item.id}>
               <div className="cart-thumb">
@@ -77,22 +40,33 @@ export default function CartPage() {
               </div>
               <div className="cart-item-main">
                 <h3>{item.title}</h3>
-                <p className="muted">In stock</p>
+                <p className="muted">${item.price.toFixed(2)} each</p>
                 <div className="quantity">
                   <button
-                    onClick={() => updateQuantity(item.id, -1)}
+                    type="button"
+                    onClick={() => dispatch(decreaseQuantity(item.id))}
+                    disabled={item.quantity <= 1}
                     aria-label="Decrease quantity"
                   >
                     −
                   </button>
                   <span>{item.quantity}</span>
                   <button
-                    onClick={() => updateQuantity(item.id, 1)}
+                    type="button"
+                    onClick={() => dispatch(increaseQuantity(item.id))}
+                    disabled={item.quantity >= 10}
                     aria-label="Increase quantity"
                   >
                     +
                   </button>
                 </div>
+                <button
+                  className="remove-button"
+                  type="button"
+                  onClick={() => dispatch(removeFromCart(item.id))}
+                >
+                  Remove
+                </button>
               </div>
               <strong>${(item.price * item.quantity).toFixed(2)}</strong>
             </div>
@@ -100,6 +74,10 @@ export default function CartPage() {
         </div>
         <aside className="summary">
           <p className="eyebrow">ORDER SUMMARY</p>
+          <div>
+            <span>Total products</span>
+            <strong>{totalQuantity}</strong>
+          </div>
           <div>
             <span>Subtotal</span>
             <strong>${total.toFixed(2)}</strong>
@@ -113,7 +91,11 @@ export default function CartPage() {
             <span>Total</span>
             <strong>${total.toFixed(2)}</strong>
           </div>
-          <button className="button dark-button" type="button">
+          <button
+            className="button dark-button"
+            type="button"
+            disabled={items.length === 0}
+          >
             Checkout <span>→</span>
           </button>
           <Link className="continue-link" href="/products">
