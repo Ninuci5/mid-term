@@ -75,6 +75,8 @@ h1 em, .profile-hero em { font-family: Georgia, serif; font-weight: 400; }
 .login-field input { border: 1px solid var(--line); font: inherit; padding: 12px; width: 100%; }
 .login-field input:focus { border-color: var(--ink); outline: 1px solid var(--ink); }
 .login-field input[aria-invalid="true"] { border-color: #a14d3d; }
+.remember-me { align-items: center; display: flex; font-size: 13px; gap: 9px; }
+.remember-me input { accent-color: var(--ink); height: 15px; width: 15px; }
 .login-error, .login-result { font-size: 12px; }
 .login-error, .login-result.error { color: #a14d3d; }
 .login-result.success { color: #39714b; }

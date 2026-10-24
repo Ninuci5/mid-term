@@ -1,31 +1,55 @@
 "use client";
 
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
+
+const authTokenKey = "shoply-auth-token";
 
 const loginSchema = yup.object({
   username: yup.string().required("Username is required."),
   password: yup.string().required("Password is required."),
+  remember: yup.boolean(),
 });
 
 export default function LoginPage() {
   const [result, setResult] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm({ resolver: yupResolver(loginSchema) });
+  } = useForm({
+    resolver: yupResolver(loginSchema),
+    defaultValues: { remember: false },
+  });
 
-  const onSubmit = async (credentials) => {
+  useEffect(() => {
+    try {
+      setIsAuthenticated(Boolean(window.localStorage.getItem(authTokenKey)));
+    } catch (error) {
+      setResult({
+        type: "error",
+        message:
+          error instanceof Error
+            ? `Unable to restore your login: ${error.message}`
+            : "Unable to restore your login.",
+      });
+    } finally {
+      setIsCheckingAuth(false);
+    }
+  }, []);
+
+  const onSubmit = async ({ username, password, remember }) => {
     setResult(null);
 
     try {
       const response = await fetch("https://fakestoreapi.com/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(credentials),
+        body: JSON.stringify({ username, password }),
       });
       const data = await response.json();
 
@@ -33,6 +57,17 @@ export default function LoginPage() {
         throw new Error(data.message || "Login failed. Check your credentials.");
       }
 
+      if (typeof data.token !== "string" || !data.token) {
+        throw new Error("Login succeeded but the server did not return a token.");
+      }
+
+      if (remember) {
+        window.localStorage.setItem(authTokenKey, data.token);
+      } else {
+        window.localStorage.removeItem(authTokenKey);
+      }
+
+      setIsAuthenticated(true);
       setResult({ type: "success", message: "Login successful." });
     } catch (error) {
       setResult({
@@ -44,6 +79,27 @@ export default function LoginPage() {
       });
     }
   };
+
+  if (isCheckingAuth) {
+    return (
+      <section className="page-shell login-page">
+        <p className="muted" role="status">Checking your login...</p>
+      </section>
+    );
+  }
+
+  if (isAuthenticated) {
+    return (
+      <section className="page-shell login-page">
+        <div className="section-heading">
+            <div>
+              <p className="eyebrow">YOUR ACCOUNT</p>
+              <h1>You&apos;re logged in</h1>
+            </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="page-shell login-page">
@@ -86,6 +142,10 @@ export default function LoginPage() {
             </p>
           )}
         </div>
+        <label className="remember-me">
+          <input type="checkbox" {...register("remember")} />
+          <span>Remember me</span>
+        </label>
         <button className="button dark-button login-submit" disabled={isSubmitting}>
           {isSubmitting ? "Logging in..." : "Login"}
           <span aria-hidden="true">→</span>
