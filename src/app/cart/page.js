@@ -22,24 +22,26 @@ const fallbackItems = [
 ];
 
 export default function CartPage() {
-  const [items, setItems] = useState(() => {
-    return fallbackItems;
-    /*
-    მგონი რაღაც პრობლემა აქააა, ვერ ვხვდები რაა
-    if (typeof window === "undefined") return fallbackItems;
-    const saved = window.localStorage.getItem("shoply-cart");
-    if (!saved) return fallbackItems;
-    try {
-      return JSON.parse(saved);
-    } catch (error) {
-      console.error("Saved cart data is invalid.", error);
-      return fallbackItems;
-    }
-    */
-  });
+  const [items, setItems] = useState(fallbackItems);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Read localStorage after hydration so server and client markup match.
   useEffect(() => {
+    const saved = window.localStorage.getItem("shoply-cart");
+    if (saved) {
+      try {
+        setItems(JSON.parse(saved));
+      } catch (error) {
+        console.error("Saved cart data is invalid.", error);
+      }
+    }
+    setIsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isLoaded) return;
     window.localStorage.setItem("shoply-cart", JSON.stringify(items));
-  }, [items]);
+  }, [items, isLoaded]);
 
   const updateQuantity = (id, delta) =>
     setItems((current) =>
